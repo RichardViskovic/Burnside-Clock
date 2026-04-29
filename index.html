@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Period Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="container">
+        <div class="top-bar">
+            <div id="greeting" class="greeting-text">Good Morning!</div>
+            <div id="current-day-period" class="date-text">Tuesday 10 March</div>
+        </div>
+        
+        <main class="timer-card">
+            <div class="circular-container">
+                <svg class="progress-ring" viewBox="0 0 400 400">
+                    <defs>
+                        <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="var(--accent-start)" />
+                            <stop offset="100%" stop-color="var(--accent-end)" />
+                        </linearGradient>
+                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="8" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
+                    <!-- Background Track -->
+                    <circle class="ring-bg" cx="200" cy="200" r="170" />
+                    <!-- Progress Path -->
+                    <circle id="progress-circle" class="ring-fg" cx="200" cy="200" r="170" />
+                </svg>
+                
+                <div class="timer-inner">
+                    <span id="status-label" class="status-badge">CURRENTLY IN</span>
+                    <h1 id="period-name" class="period-display">Period 1</h1>
+                </div>
+            </div>
+            
+            <footer class="info-grid">
+                <div class="info-tile">
+                    <span class="tile-label">UPCOMING</span>
+                    <span id="next-period-name" class="tile-value">Period 2</span>
+                </div>
+                <div class="info-tile">
+                    <span class="tile-label">STARTS IN</span>
+                    <span id="time-until-next" class="tile-value">12m</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
