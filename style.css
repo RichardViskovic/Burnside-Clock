@@ -44,6 +44,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    text-align: center;
 }
 
 /* Header Section */
@@ -79,6 +80,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 3rem;
+    text-align: center;
 }
 
 /* Circular Timer */
@@ -117,7 +119,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 80%;
+    text-align: center;
+    width: 90%;
 }
 
 .status-badge {
@@ -134,15 +137,10 @@ body {
 .period-display {
     font-size: 4rem;
     font-weight: 800;
-    margin-bottom: 0.5rem;
+    margin: 0.5rem 0;
     letter-spacing: -0.03em;
-}
-
-.time-display {
-    font-size: 6rem;
-    font-weight: 800;
-    line-height: 1;
-    color: var(--text-main);
+    line-height: 1.1;
+    text-align: center;
 }
 
 /* Info Grid */
@@ -161,6 +159,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
     gap: 0.5rem;
     transition: transform 0.3s ease;
 }

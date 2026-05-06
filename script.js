@@ -72,7 +72,7 @@ function setProgress(percent) {
 
 function updateTimer() {
     const now = new Date();
-    // For testing: const now = new Date(2026, 2, 11, 9, 2, 0); 
+    // For testing: const now = new Date(2026, 2, 11, 15, 0, 0); 
     
     const currentSeconds = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
     const day = now.getDay();
@@ -85,27 +85,45 @@ function updateTimer() {
     const periodEl = document.getElementById('period-name');
     const nextPeriodEl = document.getElementById('next-period-name');
     const timeUntilEl = document.getElementById('time-until-next');
+    const countdownLabelEl = document.getElementById('countdown-label');
 
-    // ... (greeting and date code) ...
+    const schedule = SCHEDULE[day];
 
-    // Dynamic Greeting
+    // Dynamic Greeting logic
     let greeting = "Good Morning!";
-    if (hours >= 11 && hours < 13) greeting = "Good Afternoon!";
-    else if (hours >= 13) greeting = "Almost there!";
+    if (hours >= 18) greeting = "Good Evening!";
+    else if (hours >= 12) greeting = "Good Afternoon!";
+    
+    if (schedule) {
+        const startSec = timeToSeconds(schedule[0].start);
+        const endSec = timeToSeconds(schedule[schedule.length - 1].end);
+        if (currentSeconds >= startSec && currentSeconds < endSec && hours >= 13) {
+            greeting = "Almost there!";
+        }
+    }
     greetingEl.innerText = greeting;
 
+    // Date display
     const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     dateEl.innerText = `${dayNames[day]} ${now.getDate()} ${monthNames[now.getMonth()]}`;
 
-    const schedule = SCHEDULE[day];
-    if (!schedule || currentSeconds < timeToSeconds(schedule[0].start)) {
-        showOutOfSchool("School hasn't started", schedule ? schedule[0] : null, currentSeconds);
+    // Weekend or Late Night / Early Morning Logic
+    if (!schedule) {
+        showOutOfSchool("WEEKEND", "Have a great break!", "Monday", "08:15");
+        return;
+    }
+
+    if (currentSeconds < timeToSeconds(schedule[0].start)) {
+        const diff = timeToSeconds(schedule[0].start) - currentSeconds;
+        showOutOfSchool("WELCOME", "Ready for school?", schedule[0].name, formatMinutes(diff));
         return;
     }
 
     if (currentSeconds >= timeToSeconds(schedule[schedule.length - 1].end)) {
-        showOutOfSchool("End of Day", null, currentSeconds);
+        const nextDay = (day % 5) + 1; 
+        const nextSched = SCHEDULE[nextDay] || SCHEDULE[1]; // Fallback to Monday if nextDay is weekend
+        showOutOfSchool("GOODBYE", "School is finished", "Next Class", nextSched[0].start);
         return;
     }
 
@@ -143,22 +161,20 @@ function updateTimer() {
 
             const totalPhase = phaseEnd - phaseStart;
             const elapsedPhase = currentSeconds - phaseStart;
-            const remaining = Math.max(0, phaseEnd - currentSeconds);
             const percent = Math.min(100, (elapsedPhase / totalPhase) * 100);
             
             setProgress(100 - percent);
 
             // Upcoming / Ends In logic
             const next = schedule[i + 1];
+            countdownLabelEl.innerText = "ENDS IN"; 
+            
             if (next) {
                 nextPeriodEl.innerText = next.name;
-                // Calculate time until this current PHASE ends (class or transition)
                 timeUntilEl.innerText = formatMinutes(phaseEnd - currentSeconds);
-                document.querySelectorAll('.tile-label')[1].innerText = "ENDS IN";
             } else {
                 nextPeriodEl.innerText = "Home Time";
                 timeUntilEl.innerText = formatMinutes(endSec - currentSeconds);
-                document.querySelectorAll('.tile-label')[1].innerText = "ENDS IN";
             }
             
             updateAccent(percent);
@@ -180,15 +196,18 @@ function updateAccent(percent) {
     }
 }
 
-function showOutOfSchool(msg, next, currentSeconds) {
-    document.getElementById('status-label').innerText = "STATUS";
+function showOutOfSchool(status, msg, upcoming, countdown) {
+    document.getElementById('status-label').innerText = status;
+    document.getElementById('status-label').classList.remove('transition-mode');
     document.getElementById('period-name').innerText = msg;
-    document.getElementById('time-left').innerText = "--m";
+    
+    document.getElementById('next-period-name').innerText = upcoming;
+    document.getElementById('time-until-next').innerText = countdown;
+    
+    const label = document.getElementById('countdown-label');
+    label.innerText = countdown.includes(':') ? "STARTS AT" : "STARTS IN";
+    
     setProgress(0);
-    if (next) {
-        document.getElementById('next-period-name').innerText = next.name;
-        document.getElementById('time-until-next').innerText = formatMinutes(timeToSeconds(next.start) - currentSeconds);
-    }
 }
 
 setInterval(updateTimer, 1000);
