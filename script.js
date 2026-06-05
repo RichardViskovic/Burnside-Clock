@@ -183,19 +183,6 @@ function updateTimer() {
     }
 }
 
-function updateAccent(percent) {
-    if (percent > 90) {
-        document.documentElement.style.setProperty('--accent-start', '#ef4444');
-        document.documentElement.style.setProperty('--accent-end', '#f87171');
-    } else if (percent > 75) {
-        document.documentElement.style.setProperty('--accent-start', '#f59e0b');
-        document.documentElement.style.setProperty('--accent-end', '#fbbf24');
-    } else {
-        document.documentElement.style.setProperty('--accent-start', '#3b82f6');
-        document.documentElement.style.setProperty('--accent-end', '#60a5fa');
-    }
-}
-
 function showOutOfSchool(status, msg, upcoming, countdown) {
     document.getElementById('status-label').innerText = status;
     document.getElementById('status-label').classList.remove('transition-mode');
@@ -208,7 +195,98 @@ function showOutOfSchool(status, msg, upcoming, countdown) {
     label.innerText = countdown.includes(':') ? "STARTS AT" : "STARTS IN";
     
     setProgress(0);
+    updateAccent(0);
 }
+
+const THEMES = {
+    default: { start: '#3b82f6', end: '#60a5fa' },
+    emerald: { start: '#10b981', end: '#34d399' },
+    rose: { start: '#f43f5e', end: '#fb7185' },
+    amber: { start: '#f59e0b', end: '#fbbf24' },
+    purple: { start: '#8b5cf6', end: '#a78bfa' }
+};
+
+let currentTheme = localStorage.getItem('clock-theme') || 'default';
+
+function updateAccent(percent) {
+    let start, end;
+    
+    if (percent > 90) {
+        start = '#ef4444'; // Danger
+        end = '#f87171';
+    } else if (percent > 75) {
+        start = '#f59e0b'; // Warning
+        end = '#fbbf24';
+    } else {
+        start = THEMES[currentTheme].start;
+        end = THEMES[currentTheme].end;
+    }
+    
+    document.documentElement.style.setProperty('--accent-start', start);
+    document.documentElement.style.setProperty('--accent-end', end);
+}
+
+// Settings Toggle Logic
+const settingsToggle = document.getElementById('settings-toggle');
+const settingsMenu = document.getElementById('settings-menu');
+const themeOpts = document.querySelectorAll('.theme-opt');
+const darkModeBtn = document.getElementById('dark-mode-btn');
+const lightModeBtn = document.getElementById('light-mode-btn');
+
+let currentMode = localStorage.getItem('clock-mode') || 'dark';
+
+function applyMode(mode) {
+    if (mode === 'light') {
+        document.body.classList.add('light-mode');
+        lightModeBtn.classList.add('active');
+        darkModeBtn.classList.remove('active');
+    } else {
+        document.body.classList.remove('light-mode');
+        darkModeBtn.classList.add('active');
+        lightModeBtn.classList.remove('active');
+    }
+}
+
+darkModeBtn.addEventListener('click', () => {
+    currentMode = 'dark';
+    localStorage.setItem('clock-mode', currentMode);
+    applyMode(currentMode);
+});
+
+lightModeBtn.addEventListener('click', () => {
+    currentMode = 'light';
+    localStorage.setItem('clock-mode', currentMode);
+    applyMode(currentMode);
+});
+
+applyMode(currentMode);
+
+settingsToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    settingsMenu.classList.toggle('hidden');
+});
+
+document.addEventListener('click', (e) => {
+    if (!settingsMenu.contains(e.target) && e.target !== settingsToggle) {
+        settingsMenu.classList.add('hidden');
+    }
+});
+
+themeOpts.forEach(opt => {
+    opt.addEventListener('click', () => {
+        currentTheme = opt.dataset.theme;
+        localStorage.setItem('clock-theme', currentTheme);
+        
+        // Update active state in UI
+        themeOpts.forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        
+        updateTimer(); // Force UI update
+    });
+});
+
+// Initialize active theme in UI
+document.querySelector(`[data-theme="${currentTheme}"]`)?.classList.add('active');
 
 setInterval(updateTimer, 1000);
 updateTimer();

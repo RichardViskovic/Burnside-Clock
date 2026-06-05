@@ -1,7 +1,9 @@
 :root {
     --accent-start: #3b82f6;
     --accent-end: #60a5fa;
-    --bg-dark: #0f172a;
+    --bg-main: #0f172a;
+    --bg-grad-1: #1e293b;
+    --bg-grad-2: #0f172a;
     --glass-bg: rgba(255, 255, 255, 0.08);
     --glass-border: rgba(255, 255, 255, 0.12);
     --text-main: #f8fafc;
@@ -9,6 +11,16 @@
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;
+}
+
+body.light-mode {
+    --bg-main: #f1f5f9;
+    --bg-grad-1: #ffffff;
+    --bg-grad-2: #e2e8f0;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --text-main: #1e293b;
+    --text-muted: #64748b;
 }
 
 * {
@@ -19,13 +31,14 @@
 
 body {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    background: var(--bg-dark);
+    background: var(--bg-main);
     color: var(--text-main);
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 .bg-gradient {
@@ -34,8 +47,126 @@ body {
     left: -20%;
     width: 140%;
     height: 140%;
-    background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 70%);
+    background: radial-gradient(circle at 50% 50%, var(--bg-grad-1) 0%, var(--bg-grad-2) 70%);
     z-index: -1;
+    transition: background 0.5s ease;
+}
+
+/* Settings Section */
+.settings-container {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 100;
+}
+
+.settings-btn {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    padding: 0.75rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.settings-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: rotate(45deg);
+}
+
+.settings-menu {
+    position: absolute;
+    top: calc(100% + 1rem);
+    right: 0;
+    background: var(--bg-main);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    width: 220px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: top right;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.settings-menu.hidden {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+    pointer-events: none;
+}
+
+.menu-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.menu-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.mode-toggle {
+    display: flex;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.25rem;
+    border-radius: 0.75rem;
+    gap: 0.25rem;
+}
+
+.mode-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mode-btn.active {
+    background: var(--glass-bg);
+    color: var(--text-main);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.theme-options {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.theme-opt {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.theme-opt:hover {
+    transform: scale(1.1);
+}
+
+.theme-opt.active {
+    border-color: var(--text-main);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
 .container {
@@ -45,6 +176,7 @@ body {
     flex-direction: column;
     gap: 2rem;
     text-align: center;
+    transition: transform 0.3s ease;
 }
 
 /* Header Section */
@@ -81,6 +213,11 @@ body {
     align-items: center;
     gap: 3rem;
     text-align: center;
+    transition: all 0.5s ease;
+}
+
+body.light-mode .timer-card {
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
 }
 
 /* Circular Timer */
@@ -98,8 +235,12 @@ body {
 
 .ring-bg {
     fill: none;
-    stroke: rgba(255, 255, 255, 0.05);
+    stroke: rgba(0, 0, 0, 0.05);
     stroke-width: 16;
+}
+
+body.light-mode .ring-bg {
+    stroke: rgba(0, 0, 0, 0.03);
 }
 
 .ring-fg {
@@ -132,6 +273,11 @@ body {
     color: var(--accent-end);
     letter-spacing: 0.1em;
     margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+body.light-mode .status-badge {
+    background: rgba(0, 0, 0, 0.03);
 }
 
 .period-display {
@@ -161,12 +307,20 @@ body {
     align-items: center;
     text-align: center;
     gap: 0.5rem;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+body.light-mode .info-tile {
+    background: rgba(0, 0, 0, 0.02);
 }
 
 .info-tile:hover {
     transform: translateY(-5px);
     background: rgba(255, 255, 255, 0.05);
+}
+
+body.light-mode .info-tile:hover {
+    background: rgba(0, 0, 0, 0.03);
 }
 
 .tile-label {
