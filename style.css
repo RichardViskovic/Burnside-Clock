@@ -199,6 +199,42 @@ body {
     letter-spacing: -0.02em;
 }
 
+.week-info-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.week-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.week-label {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+}
+
+.week-value {
+    font-weight: 800;
+    color: var(--accent-end);
+}
+
+.week-info-sep {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    opacity: 0.4;
+}
+
 /* Main Card */
 .timer-card {
     background: var(--glass-bg);

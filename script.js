@@ -224,6 +224,13 @@ function updateAccent(percent) {
     
     document.documentElement.style.setProperty('--accent-start', start);
     document.documentElement.style.setProperty('--accent-end', end);
+    
+    // Direct SVG update for Safari/WebKit compatibility
+    const gradientStops = document.querySelectorAll('#progress-gradient stop');
+    if (gradientStops.length >= 2) {
+        gradientStops[0].setAttribute('stop-color', start);
+        gradientStops[1].setAttribute('stop-color', end);
+    }
 }
 
 // Settings Toggle Logic
@@ -290,3 +297,21 @@ document.querySelector(`[data-theme="${currentTheme}"]`)?.classList.add('active'
 
 setInterval(updateTimer, 1000);
 updateTimer();
+
+// Week Info
+const WEEK_URL = 'https://raw.githubusercontent.com/RichardViskovic/whichweek/master/current_week.json';
+
+async function fetchWeekInfo() {
+    try {
+        const res = await fetch(WEEK_URL);
+        const data = await res.json();
+        document.getElementById('week-rotation').innerText = data.rotation || '-';
+        document.getElementById('week-term').innerText = data.term || '-';
+        document.getElementById('week-number').innerText = data.week || '-';
+    } catch (e) {
+        console.warn('Failed to fetch week info:', e);
+    }
+}
+
+fetchWeekInfo();
+setInterval(fetchWeekInfo, 60 * 60 * 1000);

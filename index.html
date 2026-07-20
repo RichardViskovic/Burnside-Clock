@@ -31,7 +31,7 @@
             <div class="menu-section">
                 <h3 class="menu-title">Color Scheme</h3>
                 <div class="theme-options">
-                    <button class="theme-opt active" data-theme="default" title="Blue" style="background: #3b82f6;"></button>
+                    <button class="theme-opt" data-theme="default" title="Blue" style="background: #3b82f6;"></button>
                     <button class="theme-opt" data-theme="emerald" title="Emerald" style="background: #10b981;"></button>
                     <button class="theme-opt" data-theme="rose" title="Rose" style="background: #f43f5e;"></button>
                     <button class="theme-opt" data-theme="amber" title="Amber" style="background: #f59e0b;"></button>
@@ -45,6 +45,13 @@
         <div class="top-bar">
             <div id="greeting" class="greeting-text">Good Morning!</div>
             <div id="current-day-period" class="date-text">Tuesday 10 March</div>
+            <div id="week-info" class="week-info-bar">
+                <span class="week-info-item"><span class="week-label">Week</span> <span id="week-rotation" class="week-value">-</span></span>
+                <span class="week-info-sep"></span>
+                <span class="week-info-item"><span class="week-label">Term</span> <span id="week-term" class="week-value">-</span></span>
+                <span class="week-info-sep"></span>
+                <span class="week-info-item"><span class="week-label">Week</span> <span id="week-number" class="week-value">-</span></span>
+            </div>
         </div>
         
         <main class="timer-card">
