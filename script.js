@@ -140,7 +140,7 @@ function updateTimer() {
             let isTransition = false;
 
             // Transition Rule: 5 mins before next class
-            if (period.type === "class" && !period.nextIsBreak) {
+            if (!lowStressMode && period.type === "class" && !period.nextIsBreak) {
                 const transitionStartSec = endSec - 300;
                 if (currentSeconds >= transitionStartSec) {
                     phaseStart = transitionStartSec;
@@ -211,10 +211,10 @@ let currentTheme = localStorage.getItem('clock-theme') || 'default';
 function updateAccent(percent) {
     let start, end;
     
-    if (percent > 90) {
+    if (!lowStressMode && percent > 90) {
         start = '#ef4444'; // Danger
         end = '#f87171';
-    } else if (percent > 75) {
+    } else if (!lowStressMode && percent > 75) {
         start = '#f59e0b'; // Warning
         end = '#fbbf24';
     } else {
@@ -294,6 +294,24 @@ themeOpts.forEach(opt => {
 
 // Initialize active theme in UI
 document.querySelector(`[data-theme="${currentTheme}"]`)?.classList.add('active');
+
+const lowStressRow = document.getElementById('low-stress-row');
+const lowStressToggle = document.getElementById('low-stress-toggle');
+
+let lowStressMode = localStorage.getItem('clock-low-stress') === 'true';
+
+lowStressToggle.checked = lowStressMode;
+
+lowStressToggle.addEventListener('change', () => {
+    lowStressMode = lowStressToggle.checked;
+    localStorage.setItem('clock-low-stress', String(lowStressMode));
+    updateTimer();
+});
+
+lowStressRow.addEventListener('click', () => {
+    lowStressToggle.checked = !lowStressToggle.checked;
+    lowStressToggle.dispatchEvent(new Event('change'));
+});
 
 setInterval(updateTimer, 1000);
 updateTimer();
