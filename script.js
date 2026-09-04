@@ -51,6 +51,27 @@ const SCHEDULE = {
     ]
 };
 
+// Exam week: same schedule every weekday. Add date ranges here to activate.
+const EXAM_WEEKS = [
+    { start: '2026-09-08', end: '2026-09-17' } // Tue 8 Sep - Thu 17 Sep 2026
+];
+
+const EXAM_SCHEDULE = [
+    { name: "Form", start: "08:15", end: "08:30", type: "class" },
+    { name: "Period 1", start: "08:30", end: "09:30", type: "class" },
+    { name: "Period 2", start: "09:30", end: "10:25", type: "class", nextIsBreak: true },
+    { name: "Interval", start: "10:25", end: "10:50", type: "break" },
+    { name: "Period 3", start: "10:50", end: "11:45", type: "class", nextIsBreak: true },
+    { name: "Lunch", start: "11:45", end: "12:40", type: "break" },
+    { name: "Period 4", start: "12:40", end: "13:40", type: "class" },
+    { name: "Period 5", start: "13:40", end: "14:40", type: "class", nextIsBreak: true }
+];
+
+function isExamDay(now) {
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    return EXAM_WEEKS.some(w => today >= w.start && today <= w.end);
+}
+
 function timeToSeconds(timeStr) {
     const [hours, minutes] = timeStr.split(':').map(Number);
     return (hours * 3600) + (minutes * 60);
@@ -87,7 +108,11 @@ function updateTimer() {
     const timeUntilEl = document.getElementById('time-until-next');
     const countdownLabelEl = document.getElementById('countdown-label');
 
-    const schedule = SCHEDULE[day];
+    const examActive = isExamDay(now) && day >= 1 && day <= 5;
+    const schedule = examActive ? EXAM_SCHEDULE : SCHEDULE[day];
+
+    document.getElementById('exam-sep').hidden = !examActive;
+    document.getElementById('exam-indicator').hidden = !examActive;
 
     // Dynamic Greeting logic
     let greeting = "Good Morning!";
@@ -122,7 +147,7 @@ function updateTimer() {
 
     if (currentSeconds >= timeToSeconds(schedule[schedule.length - 1].end)) {
         const nextDay = (day % 5) + 1; 
-        const nextSched = SCHEDULE[nextDay] || SCHEDULE[1]; // Fallback to Monday if nextDay is weekend
+        const nextSched = examActive ? EXAM_SCHEDULE : (SCHEDULE[nextDay] || SCHEDULE[1]); // Fallback to Monday if nextDay is weekend
         showOutOfSchool("GOODBYE", "School is finished", "Next Class", nextSched[0].start);
         return;
     }
@@ -140,7 +165,7 @@ function updateTimer() {
             let isTransition = false;
 
             // Transition Rule: 5 mins before next class
-            if (!lowStressMode && period.type === "class" && !period.nextIsBreak) {
+            if (period.type === "class" && !period.nextIsBreak) {
                 const transitionStartSec = endSec - 300;
                 if (currentSeconds >= transitionStartSec) {
                     phaseStart = transitionStartSec;
@@ -156,7 +181,7 @@ function updateTimer() {
             // Update UI
             statusEl.innerText = displayStatus;
             periodEl.innerText = displayName;
-            if (isTransition) statusEl.classList.add('transition-mode');
+            if (isTransition && !lowStressMode) statusEl.classList.add('transition-mode');
             else statusEl.classList.remove('transition-mode');
 
             const totalPhase = phaseEnd - phaseStart;
